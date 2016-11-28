@@ -5,12 +5,12 @@ var express = require('express'),
 	path = require('path');
 	usernames = [],
 	emoji = require('node-emoji');
-
+	var listEmoji = require('./emoji.json');
+	
 server.listen(process.env.PORT || 3000);
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname + '/index.html'));
-	console.log(emoji.emojify('I :heart: :coffee: '));
 });
 
 io.sockets.on('connection', (socket) => {
@@ -29,8 +29,10 @@ io.sockets.on('connection', (socket) => {
 	function updateUsernames() {
 		io.sockets.emit('usernames', usernames);
 	}
+
 	//send message
 	socket.on('send message', (data) => {
+		data = emoji.emojify(data);
 		io.sockets.emit('new message', { msg : data, user : socket.username });
 	});
 
