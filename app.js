@@ -3,12 +3,14 @@ var express = require('express'),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server),
 	path = require('path');
-	usernames = [];
+	usernames = [],
+	emoji = require('node-emoji');
 
 server.listen(process.env.PORT || 3000);
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname + '/index.html'));
+	console.log(emoji.emojify('I :heart: :coffee: '));
 });
 
 io.sockets.on('connection', (socket) => {
