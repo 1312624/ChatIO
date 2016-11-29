@@ -68,11 +68,11 @@
         visibility: hidden;
     }
     
-    input[type="radio"]:checked + label{
-        border : 1px solid #87CEFA;
+    input[type="radio"]:checked + label {
+        border: 1px solid #87CEFA;
         border-radius: 2px;
     }
-
+    
     label {
         cursor: pointer;
     }
@@ -152,7 +152,7 @@
         var $error = $('#error');
 
         $('#btnSendEmoji').on("click", () => {
-        	$message.val($message.val() + $('input[name="emoji"]:checked').val());
+            $message.val($message.val() + $('input[name="emoji"]:checked').val());
         })
 
         $usernameForm.submit((e) => {
@@ -170,14 +170,16 @@
         });
 
         socket.on('new user', (data) => {
-            for (i = 859; i < 929; i++) {
-            	if ( i <= 924 && i >= 916 ) continue;
-                let $element = '<li><input value="' + data.listemoji[i] + '"type="radio" name="emoji" class="emoji-button" id="emoji' + i + '"/> <label for="emoji' + i + '">' + data.listemoji[i] + '</label></li>';
-                $('#listEmoji').append($element);
-            }
-            for (i = 612; i < 625; i++) {
-                let $element = '<li><input value="' + data.listemoji[i] + '" type="radio" name="emoji" class="emoji-button" id="emoji' + i + '"/> <label for="emoji' + i + '">' + data.listemoji[i] + '</label></li>';
-                $('#listEmoji').append($element);
+            if ($('.emoji-button').length <= 0) {
+                for (i = 859; i < 929; i++) {
+                    if (i <= 924 && i >= 916) continue;
+                    let $element = '<li><input value="' + data.listemoji[i] + '"type="radio" name="emoji" class="emoji-button" id="emoji' + i + '"/> <label for="emoji' + i + '">' + data.listemoji[i] + '</label></li>';
+                    $('#listEmoji').append($element);
+                }
+                for (i = 612; i < 625; i++) {
+                    let $element = '<li><input value="' + data.listemoji[i] + '" type="radio" name="emoji" class="emoji-button" id="emoji' + i + '"/> <label for="emoji' + i + '">' + data.listemoji[i] + '</label></li>';
+                    $('#listEmoji').append($element);
+                }
             }
         });
 
