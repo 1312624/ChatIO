@@ -4,9 +4,9 @@ var express = require('express'),
 	io = require('socket.io').listen(server),
 	path = require('path');
 	usernames = [],
-	emoji = require('node-emoji');
-	var listEmoji = require('./emoji.json');
-	
+	emoji = require('node-emoji'),
+	listEmoji = require('./emoji.json');
+
 server.listen(process.env.PORT || 3000);
 
 app.get('/', (req, res) => {
@@ -23,6 +23,11 @@ io.sockets.on('connection', (socket) => {
 			socket.username = data;
 			usernames.push(socket.username);
 			updateUsernames();
+			let listemoji = [];
+			Object.keys(listEmoji).forEach( (key) => {
+				listemoji.push(emoji.emojify(listEmoji[key]));
+			});
+			io.sockets.emit('new user', { listemoji: listemoji});
 		}
 	});
 

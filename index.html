@@ -3,6 +3,7 @@
 
 <head>
     <title>ChatIO</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <style>
     body {
         background: #f9f9f9;
@@ -53,6 +54,36 @@
     input {
         height: 30px;
     }
+    
+    ul {
+        list-style: none;
+    }
+    
+    li {
+        display: inline-block;
+        margin-right: 15px;
+    }
+    
+    input[type="radio"] {
+        visibility: hidden;
+    }
+    
+    input[type="radio"]:checked + label{
+        border : 1px solid #87CEFA;
+        border-radius: 2px;
+    }
+
+    label {
+        cursor: pointer;
+    }
+    
+    .emoji-button {
+        top: 0px;
+        left: 0;
+        background: transparent;
+        border: none !important;
+        color: white;
+    }
     </style>
 </head>
 
@@ -63,7 +94,7 @@
             <p>Create Username: </p>
             <div id="error"></div>
             <form id="usernameForm">
-                <input type="text" size="35" id="username" />
+                <input type="text" size="35" id="username" autofocus />
                 <input type="submit" value="Submit" />
             </form>
         </div>
@@ -74,15 +105,40 @@
                 <form id="messageForm">
                     <input type="text" size="35" id="message" placeholder="Say something..." />
                     <input type="submit" value="Send It!" />
+                    <input type="button" value="Emoji" data-toggle="modal" data-target="#myModal" />
                 </form>
             </div>
-
             <div id="userWrapper">
                 <div id="users"></div>
             </div>
         </div>
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">List Emotion Icon</h4>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="listEmoji">
+                        </ul>
+                        <!-- onclick : $message.val() += $(#abc).val() -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="btnSendEmoji" data-dismiss="modal">Send</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
     </div>
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script>
     (($) => {
@@ -95,27 +151,42 @@
         var $username = $('#username');
         var $error = $('#error');
 
-        $usernameForm.submit((e) => {
-        	e.preventDefault();
-        	socket.emit('new user', $username.val(), (data) => {
-        		if(data) {
-        			$('#namesWrapper').hide();
-        			$('#mainWrapper').show();
-        		}
-        		else {
-        			$error.html('Username is already taken');
-        		}
-        	});
+        $('#btnSendEmoji').on("click", () => {
+        	$message.val($message.val() + $('input[name="emoji"]:checked').val());
+        })
 
-        	$username.val('');
+        $usernameForm.submit((e) => {
+            e.preventDefault();
+            socket.emit('new user', $username.val(), (data) => {
+                if (data) {
+                    $('#namesWrapper').hide();
+                    $('#mainWrapper').show();
+                } else {
+                    $error.html('Username is already taken');
+                }
+            });
+
+            $username.val('');
+        });
+
+        socket.on('new user', (data) => {
+            for (i = 859; i < 929; i++) {
+            	if ( i <= 924 && i >= 916 ) continue;
+                let $element = '<li><input value="' + data.listemoji[i] + '"type="radio" name="emoji" class="emoji-button" id="emoji' + i + '"/> <label for="emoji' + i + '">' + data.listemoji[i] + '</label></li>';
+                $('#listEmoji').append($element);
+            }
+            for (i = 612; i < 625; i++) {
+                let $element = '<li><input value="' + data.listemoji[i] + '" type="radio" name="emoji" class="emoji-button" id="emoji' + i + '"/> <label for="emoji' + i + '">' + data.listemoji[i] + '</label></li>';
+                $('#listEmoji').append($element);
+            }
         });
 
         socket.on('usernames', (data) => {
-        	var html = '';
-        	for(i = 0; i < data.length; i++) {
-        		html += data[i] + '<br>';
-        	}
-        	$users.html(html);
+            var html = '';
+            for (i = 0; i < data.length; i++) {
+                html += data[i] + '<br>';
+            }
+            $users.html(html);
         });
 
         $messageForm.submit((e) => {
